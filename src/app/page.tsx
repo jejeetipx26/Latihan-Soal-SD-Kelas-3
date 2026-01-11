@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-// Import fungsi Server Action
+// Pastikan file actions.ts ada (atau biarkan import ini jika menggunakan mock data)
 import { loginUser, submitScoreToDB, getAllScores } from "./actions";
 import {
   BookOpen, Calculator, FlaskConical, Star, ChevronLeft, Trophy, User, ArrowRight,
   LogOut, Moon, Lock, CheckCircle2, Cloud, Rocket, GraduationCap, LayoutDashboard,
-  Pencil, Medal, HelpCircle, Check, BrainCircuit, Atom, Send, Loader2, Target, XCircle, PlayCircle
+  Pencil, Medal, HelpCircle, Check, BrainCircuit, Atom, Loader2, Target, XCircle,
+  Scale
 } from "lucide-react";
 
 // --- TIPE DATA ---
@@ -29,7 +30,7 @@ interface ScoreData {
   score: number;
 }
 
-// --- DATA SOAL MATEMATIKA HARI 1 (15 SOAL) ---
+// --- DATA SOAL MATEMATIKA HARI 1 ---
 const MATH_DAY1_QUESTIONS = [
   { id: 1, question: "Satu kue dibagi menjadi 2 bagian sama besar. Ani mengambil 1 bagian. Pecahan yang menunjukkan bagian Ani adalah …", options: ["1/3", "1/2", "2/1", "2/2"], answer: "1/2", explanation: "Karena diambil 1 bagian dari total 2 bagian, maka ditulis 1/2." },
   { id: 2, question: "Satu pizza dibagi menjadi 4 bagian sama besar. Budi mengambil 1 bagian. Pecahan yang tepat adalah …", options: ["1/2", "1/3", "1/4", "4/1"], answer: "1/4", explanation: "1 bagian dari 4 potongan pizza ditulis 1/4." },
@@ -48,6 +49,44 @@ const MATH_DAY1_QUESTIONS = [
   { id: 15, question: "Pecahan yang benar untuk menunjukkan satu bagian dari empat bagian adalah …", options: ["4/1", "1/4", "2/4", "4/4"], answer: "1/4", explanation: "Satu dari empat bagian ditulis 1/4." },
 ];
 
+// --- DATA SOAL MATEMATIKA HARI 2 ---
+const MATH_DAY2_QUESTIONS = [
+  { id: 1, question: "Sebuah lingkaran dibagi menjadi 2 bagian sama besar. Jika 1 bagian diwarnai, pecahannya adalah …", options: ["1/3", "1/4", "1/2", "2/1"], answer: "1/2", explanation: "1 bagian diwarnai dari total 2 bagian adalah 1/2." },
+  { id: 2, question: "Sebuah persegi dibagi menjadi 4 bagian sama besar. Jika 1 bagian diarsir, pecahannya adalah …", options: ["1/2", "1/3", "1/4", "4/1"], answer: "1/4", explanation: "1 bagian diarsir dari total 4 bagian adalah 1/4." },
+  { id: 3, question: "Gambar sebuah kue dibagi menjadi 3 bagian sama besar. Jika 1 bagian diwarnai, pecahannya adalah …", options: ["1/2", "1/3", "2/3", "3/1"], answer: "1/3", explanation: "1 bagian diwarnai dari total 3 bagian adalah 1/3." },
+  { id: 4, question: "Sebuah gambar dibagi menjadi 4 bagian sama besar. Jika 2 bagian diwarnai, pecahannya adalah …", options: ["1/4", "2/4", "1/2", "4/2"], answer: "2/4", explanation: "2 bagian diwarnai dari total 4 bagian adalah 2/4." },
+  { id: 5, question: "Perhatikan gambar sebuah lingkaran yang dibagi menjadi 4 bagian sama besar. Jika 3 bagian diarsir, pecahannya adalah …", options: ["1/4", "2/4", "3/4", "4/3"], answer: "3/4", explanation: "3 bagian diarsir dari total 4 bagian adalah 3/4." },
+  { id: 6, question: "Satu pizza dibagi menjadi 2 bagian sama besar. Jika Ani memakan 1 potong, pecahannya adalah …", options: ["1/2", "1/3", "2/1", "2/2"], answer: "1/2", explanation: "1 potong dimakan dari 2 potong total adalah 1/2." },
+  { id: 7, question: "Satu roti dibagi menjadi 3 bagian sama besar. Jika Budi mengambil 1 bagian, pecahannya adalah …", options: ["1/2", "1/3", "2/3", "3/1"], answer: "1/3", explanation: "1 bagian diambil dari 3 bagian total adalah 1/3." },
+  { id: 8, question: "Satu cokelat dibagi menjadi 4 bagian sama besar. Jika diambil 2 bagian, pecahannya adalah …", options: ["1/4", "2/4", "1/2", "4/2"], answer: "2/4", explanation: "2 bagian diambil dari 4 bagian total adalah 2/4." },
+  { id: 9, question: "Gambar dibagi menjadi 2 bagian sama besar. Jika 1 bagian diarsir, maka pecahannya adalah …", options: ["1/4", "1/3", "1/2", "2/1"], answer: "1/2", explanation: "1 bagian diarsir dari 2 bagian adalah 1/2." },
+  { id: 10, question: "Sebuah gambar dibagi menjadi 3 bagian sama besar. Jika 2 bagian diwarnai, pecahannya adalah …", options: ["1/3", "2/3", "3/2", "3/3"], answer: "2/3", explanation: "2 bagian diwarnai dari 3 bagian total adalah 2/3." },
+  { id: 11, question: "Satu semangka dibagi menjadi 4 bagian sama besar. Jika diambil 1 bagian, pecahannya adalah …", options: ["1/2", "1/3", "1/4", "4/1"], answer: "1/4", explanation: "1 bagian diambil dari 4 bagian total adalah 1/4." },
+  { id: 12, question: "Sebuah gambar dibagi menjadi 4 bagian sama besar. Jika 2 bagian diarsir, pecahan yang benar adalah …", options: ["2/2", "1/4", "2/4", "4/2"], answer: "2/4", explanation: "2 bagian diarsir dari 4 bagian total adalah 2/4." },
+  { id: 13, question: "Sebuah benda dibagi menjadi 3 bagian sama besar. Jika 1 bagian diambil, maka pecahannya adalah …", options: ["1/2", "1/3", "2/3", "3/1"], answer: "1/3", explanation: "1 bagian diambil dari 3 bagian total adalah 1/3." },
+  { id: 14, question: "Pecahan yang menunjukkan 1 bagian dari 4 bagian sama besar adalah …", options: ["4/1", "2/4", "1/4", "4/4"], answer: "1/4", explanation: "1 dari 4 bagian sama besar ditulis 1/4." },
+  { id: 15, question: "Sebuah gambar dibagi menjadi 2 bagian sama besar. Jika 2 bagian diwarnai, pecahannya adalah …", options: ["1/2", "2/1", "2/2", "1/1"], answer: "2/2", explanation: "2 bagian diwarnai dari 2 bagian total adalah 2/2 (atau 1 utuh)." },
+];
+
+// --- DATA SOAL MATEMATIKA HARI 3 (BARU DITAMBAHKAN) ---
+const MATH_DAY3_QUESTIONS = [
+  { id: 1, question: "Manakah pecahan yang lebih besar?", options: ["1/4", "1/2", "Keduanya sama", "Tidak bisa dibandingkan"], answer: "1/2", explanation: "Potongan 1/2 (setengah) lebih besar daripada 1/4 (seperempat)." },
+  { id: 2, question: "Bandingkan pecahan berikut: 1/3 … 1/4", options: ["1/3 > 1/4", "1/3 < 1/4", "1/3 = 1/4", "Tidak bisa dibandingkan"], answer: "1/3 > 1/4", explanation: "Jika pembilang sama (1), penyebut yang lebih kecil (3) nilainya lebih besar." },
+  { id: 3, question: "Manakah pecahan yang lebih kecil?", options: ["1/2", "1/4", "Keduanya sama", "Tidak bisa dibandingkan"], answer: "1/4", explanation: "1/4 lebih kecil daripada 1/2." },
+  { id: 4, question: "Bandingkan pecahan berikut: 2/4 … 1/4", options: ["2/4 < 1/4", "2/4 = 1/4", "2/4 > 1/4", "Tidak bisa dibandingkan"], answer: "2/4 > 1/4", explanation: "Karena penyebutnya sama (4), 2 bagian lebih besar daripada 1 bagian." },
+  { id: 5, question: "Manakah yang lebih besar?", options: ["1/3", "2/3", "Sama besar", "Tidak bisa dibandingkan"], answer: "2/3", explanation: "2 bagian dari 3 (2/3) lebih banyak daripada 1 bagian dari 3 (1/3)." },
+  { id: 6, question: "Bandingkan pecahan berikut: 1/2 … 1/4", options: ["1/2 < 1/4", "1/2 = 1/4", "1/2 > 1/4", "Tidak bisa dibandingkan"], answer: "1/2 > 1/4", explanation: "Setengah (1/2) lebih besar dari seperempat (1/4)." },
+  { id: 7, question: "Manakah pecahan yang lebih besar?", options: ["1/4", "2/4", "Sama besar", "Tidak bisa dibandingkan"], answer: "2/4", explanation: "2/4 lebih besar karena mengambil 2 bagian, sedangkan 1/4 hanya 1 bagian." },
+  { id: 8, question: "Bandingkan pecahan berikut: 2/3 … 1/3", options: ["2/3 < 1/3", "2/3 = 1/3", "2/3 > 1/3", "Tidak bisa dibandingkan"], answer: "2/3 > 1/3", explanation: "2 bagian lebih banyak daripada 1 bagian pada penyebut yang sama." },
+  { id: 9, question: "Manakah pecahan yang nilainya sama?", options: ["1/2 dan 1/4", "2/4 dan 1/2", "1/3 dan 1/4", "2/3 dan 1/3"], answer: "2/4 dan 1/2", explanation: "2/4 itu senilai (sama besar) dengan 1/2." },
+  { id: 10, question: "Bandingkan pecahan berikut: 1/3 … 2/3", options: ["1/3 > 2/3", "1/3 < 2/3", "1/3 = 2/3", "Tidak bisa dibandingkan"], answer: "1/3 < 2/3", explanation: "1 bagian lebih sedikit daripada 2 bagian." },
+  { id: 11, question: "Manakah pecahan yang lebih kecil?", options: ["2/4", "1/4", "Sama besar", "Tidak bisa dibandingkan"], answer: "1/4", explanation: "1/4 lebih kecil daripada 2/4." },
+  { id: 12, question: "Bandingkan pecahan berikut: 1/4 … 1/4", options: ["1/4 < 1/4", "1/4 > 1/4", "1/4 = 1/4", "Tidak bisa dibandingkan"], answer: "1/4 = 1/4", explanation: "Kedua pecahan angkanya sama persis, jadi nilainya sama." },
+  { id: 13, question: "Manakah pecahan yang lebih besar?", options: ["1/3", "1/4", "Sama besar", "Tidak bisa dibandingkan"], answer: "1/3", explanation: "1/3 lebih besar daripada 1/4." },
+  { id: 14, question: "Bandingkan pecahan berikut: 2/4 … 2/4", options: ["2/4 < 2/4", "2/4 > 2/4", "2/4 = 2/4", "Tidak bisa dibandingkan"], answer: "2/4 = 2/4", explanation: "Kedua pecahan sama persis." },
+  { id: 15, question: "Manakah yang paling besar?", options: ["1/4", "1/2", "1/3", "Semua sama"], answer: "1/2", explanation: "1/2 adalah yang paling besar dibandingkan 1/3 dan 1/4." },
+];
+
 export default function Page() {
   const [user, setUser] = useState<UserData | null>(null);
 
@@ -63,15 +102,29 @@ export default function Page() {
   const [activeSubject, setActiveSubject] = useState<Subject | null>(null);
   const [activeDay, setActiveDay] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>("MENU_HARI");
-  const [lastCompletedDay, setLastCompletedDay] = useState(0);
+  const [lastCompletedDay, setLastCompletedDay] = useState(2); // Default level terbuka sampai hari 3 untuk testing
 
   // --- STATE KHUSUS KUIS (MULTIPLE CHOICE) ---
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [userAnswers, setUserAnswers] = useState<{[key: number]: string}>({}); // Simpan jawaban { noSoal: "Jawaban" }
+  const [userAnswers, setUserAnswers] = useState<{[key: number]: string}>({});
   const [isQuizFinished, setIsQuizFinished] = useState(false);
   const [quizScore, setQuizScore] = useState<number | null>(null);
 
-  // --- LOGIC ---
+  // --- LOGIC HELPER ---
+
+  // Fungsi untuk mengambil soal berdasarkan hari yang aktif
+  const getActiveQuestions = () => {
+    if (activeSubject === "MATEMATIKA") {
+      if (activeDay === 1) return MATH_DAY1_QUESTIONS;
+      if (activeDay === 2) return MATH_DAY2_QUESTIONS;
+      if (activeDay === 3) return MATH_DAY3_QUESTIONS; // Ditambahkan
+    }
+    return [];
+  };
+
+  const activeQuestions = getActiveQuestions();
+
+  // --- LOGIC AUTH ---
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,7 +173,7 @@ export default function Page() {
   };
 
   const handleNextQuestion = () => {
-    if (currentQuestionIndex < MATH_DAY1_QUESTIONS.length - 1) {
+    if (currentQuestionIndex < activeQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
@@ -133,23 +186,20 @@ export default function Page() {
 
   const submitQuiz = async () => {
     let correctCount = 0;
-    MATH_DAY1_QUESTIONS.forEach((q, index) => {
+    activeQuestions.forEach((q, index) => {
       if (userAnswers[index] === q.answer) {
         correctCount++;
       }
     });
 
-    // Hitung Nilai (Skala 100)
-    const finalScore = Math.round((correctCount / MATH_DAY1_QUESTIONS.length) * 100);
+    const finalScore = Math.round((correctCount / activeQuestions.length) * 100);
     setQuizScore(finalScore);
     setIsQuizFinished(true);
 
-    // Buka level selanjutnya jika nilai > 60
     if (finalScore >= 60 && activeDay && activeDay > lastCompletedDay) {
       setLastCompletedDay(activeDay);
     }
 
-    // Simpan ke Database
     if (user && activeSubject && activeDay) {
       try {
         await submitScoreToDB(user.id, activeSubject, activeDay, finalScore);
@@ -331,8 +381,19 @@ export default function Page() {
                 <div className="animate-[slideIn_0.3s_ease-out]">
                   <div className="bg-gradient-to-br from-indigo-50/50 to-white border border-indigo-100 rounded-[25px] md:rounded-[35px] p-6 md:p-10 mb-6 md:mb-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 p-6 opacity-5"><BookOpen className="w-[150px] h-[150px]" /></div>
-                    <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 flex items-center gap-2 md:gap-3 relative z-10"><span className="bg-indigo-600 text-white p-2 rounded-lg"><BookOpen className="w-4 h-4 md:w-5 md:h-5"/></span>{activeSubject === "MATEMATIKA" && activeDay === 1 ? "Pecahan Sederhana" : `Materi Hari ${activeDay}`}</h2>
+
+                    {/* Judul Materi Dinamis */}
+                    <h2 className="text-xl md:text-2xl font-black text-slate-800 mb-4 md:mb-6 flex items-center gap-2 md:gap-3 relative z-10">
+                      <span className="bg-indigo-600 text-white p-2 rounded-lg"><BookOpen className="w-4 h-4 md:w-5 md:h-5"/></span>
+                      {activeSubject === "MATEMATIKA" && activeDay === 1 ? "Pecahan Sederhana" :
+                          activeSubject === "MATEMATIKA" && activeDay === 2 ? "Menentukan Pecahan" :
+                              activeSubject === "MATEMATIKA" && activeDay === 3 ? "Membandingkan Pecahan" :
+                                  `Materi Hari ${activeDay}`}
+                    </h2>
+
                     <div className="prose prose-slate text-base md:text-lg text-slate-600 leading-relaxed relative z-10 w-full">
+
+                      {/* --- MATERI HARI 1 --- */}
                       {activeSubject === "MATEMATIKA" && activeDay === 1 ? (
                           <div className="space-y-6">
                             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100"><h3 className="font-bold text-blue-800 flex items-center gap-2 mb-2"><Target size={18} /> Tujuan Belajar</h3><ul className="list-disc list-inside text-sm md:text-base space-y-1"><li>Mengerti apa itu pecahan</li><li>Mengenal ½, ⅓, dan ¼</li><li>Menentukan pecahan dari benda sehari-hari</li></ul></div>
@@ -344,8 +405,135 @@ export default function Page() {
                               <div className="bg-white p-4 rounded-2xl border hover:shadow-md transition-shadow text-center"><div className="h-32 flex items-center justify-center mb-2 overflow-hidden rounded-xl"><img src="https://i.ytimg.com/vi/-bEoPvwSJAs/maxresdefault.jpg" alt="Sepertiga Roti" className="h-full object-contain" onError={(e) => { e.currentTarget.src = "https://placehold.co/150?text=Gambar+Roti"; }} /></div><p className="font-bold text-indigo-600 text-xl">⅓</p><p className="text-sm text-slate-500">Dibaca: Sepertiga</p><p className="text-xs mt-1 text-slate-400">1 roti dibagi 3</p></div>
                             </div></div>
                           </div>
+
+                          /* --- MATERI HARI 2 --- */
+                      ) : activeSubject === "MATEMATIKA" && activeDay === 2 ? (
+                          <div className="space-y-8">
+                            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                              <h3 className="font-bold text-green-800 flex items-center gap-2 mb-2"><Target size={18} /> Tujuan Pembelajaran</h3>
+                              <ul className="list-disc list-inside text-sm md:text-base space-y-1 text-green-900"><li>Menentukan pecahan dari gambar</li><li>Menentukan pecahan dari benda sehari-hari</li><li>Menyebutkan pecahan dengan benar</li></ul>
+                            </div>
+                            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex gap-3"><div className="text-yellow-600"><BrainCircuit size={24} /></div><div><h3 className="font-bold text-yellow-800 text-lg">🤔 Mengingat Kembali</h3><p className="text-sm text-yellow-900 mt-1">Kemarin kita belajar bahwa <strong>pecahan</strong> adalah bagian dari suatu benda yang dibagi <strong>sama besar</strong>.</p></div></div>
+                            <div><h3 className="font-bold text-indigo-900 text-xl mb-3 flex items-center gap-2">🖼️ Pecahan dari Gambar</h3><div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm mb-4"><h4 className="font-bold text-slate-700 mb-2">👉 Langkah-langkah mudah:</h4><ol className="list-decimal list-inside space-y-2 text-slate-600 text-sm md:text-base"><li>Hitung jumlah <strong>semua bagian</strong> (Angka Bawah / Penyebut)</li><li>Hitung bagian yang <strong>diarsir/diwarnai</strong> (Angka Atas / Pembilang)</li><li>Tulis pecahannya</li></ol></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-center"><div className="bg-white w-24 h-24 mx-auto rounded-full border-2 border-indigo-200 mb-2 flex overflow-hidden"><div className="w-1/2 h-full bg-indigo-500"></div><div className="w-1/2 h-full bg-white"></div></div><p className="font-bold text-indigo-800">1 dari 2 Bagian</p><p className="text-2xl font-black text-indigo-600 mt-1">1/2</p></div><div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 text-center"><div className="bg-white w-24 h-24 mx-auto rounded-full border-2 border-indigo-200 mb-2 grid grid-cols-2 grid-rows-2 overflow-hidden"><div className="bg-orange-400"></div><div className="bg-white"></div><div className="bg-white"></div><div className="bg-white"></div></div><p className="font-bold text-indigo-800">1 dari 4 Bagian</p><p className="text-2xl font-black text-indigo-600 mt-1">1/4</p></div></div></div>
+                            <div><h3 className="font-bold text-indigo-900 text-xl mb-3 flex items-center gap-2">🍞 Pecahan Benda Nyata</h3><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div className="bg-white p-4 rounded-2xl border hover:shadow-md transition-shadow"><h4 className="font-bold text-orange-600 flex items-center gap-2 mb-2">🍕 Pizza Ani</h4><p className="text-sm text-slate-600 mb-2">Satu pizza dibagi 4. Ani ambil 1 potong.</p><div className="bg-orange-50 p-2 rounded-lg text-center"><span className="text-xs font-bold text-orange-400 uppercase">Pecahan Ani</span><p className="text-2xl font-black text-orange-600">1/4</p></div></div><div className="bg-white p-4 rounded-2xl border hover:shadow-md transition-shadow"><h4 className="font-bold text-amber-700 flex items-center gap-2 mb-2">🍫 Cokelat Budi</h4><p className="text-sm text-slate-600 mb-2">Satu cokelat dibagi 3. Budi ambil 1 bagian.</p><div className="bg-amber-50 p-2 rounded-lg text-center"><span className="text-xs font-bold text-amber-700 uppercase">Pecahan Budi</span><p className="text-2xl font-black text-amber-800">1/3</p></div></div></div></div>
+                          </div>
+
+                          /* --- MATERI HARI 3 (BARU) --- */
+                      ) : activeSubject === "MATEMATIKA" && activeDay === 3 ? (
+                          <div className="space-y-8">
+
+                            {/* Tujuan Pembelajaran */}
+                            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                              <h3 className="font-bold text-green-800 flex items-center gap-2 mb-2"><Target size={18} /> Tujuan Pembelajaran</h3>
+                              <ul className="list-disc list-inside text-sm md:text-base space-y-1 text-green-900">
+                                <li>Membandingkan dua pecahan sederhana</li>
+                                <li>Menentukan pecahan yang lebih besar atau lebih kecil</li>
+                                <li>Menggunakan tanda {'>'} (lebih besar), {'<'} (lebih kecil), dan = (sama dengan)</li>
+                              </ul>
+                            </div>
+
+                            {/* Mengingat Kembali */}
+                            <div className="bg-yellow-50 p-4 rounded-xl border border-yellow-100 flex gap-3">
+                              <div className="text-yellow-600"><BrainCircuit size={24} /></div>
+                              <div>
+                                <h3 className="font-bold text-yellow-800 text-lg">🤔 Mengingat Kembali</h3>
+                                <p className="text-sm text-yellow-900 mt-1">Pecahan menunjukkan bagian dari suatu benda. <br/>Jika bagian yang diambil <strong>lebih banyak</strong>, maka pecahannya <strong>lebih besar</strong>.</p>
+                              </div>
+                            </div>
+
+                            {/* Cara Membandingkan */}
+                            <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                              <h3 className="font-bold text-indigo-900 text-lg mb-3 flex items-center gap-2"><Scale size={20}/> Cara Membandingkan (Mudah!)</h3>
+                              <p className="text-slate-600 text-sm mb-3">Untuk kelas 3, kita pakai cara melihat gambar atau bagian ya 😊</p>
+                              <div className="bg-slate-50 p-3 rounded-lg text-sm text-slate-700 space-y-2">
+                                <p>👉 <strong>Pastikan</strong> benda dibagi sama besar</p>
+                                <p>👉 <strong>Lihat</strong> bagian yang diambil atau diarsir</p>
+                                <p>👉 <strong>Bandingkan</strong> mana yang lebih banyak</p>
+                              </div>
+                            </div>
+
+                            {/* Contoh 1: Visual Kue */}
+                            <div>
+                              <h3 className="font-bold text-indigo-900 text-lg mb-4">🖼️ Contoh 1: Bandingkan Kue</h3>
+                              <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
+                                {/* Kue A (1/2) */}
+                                <div className="text-center">
+                                  <div className="w-24 h-24 bg-indigo-100 rounded-full mx-auto mb-2 border-2 border-indigo-200 relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1/2 h-full bg-indigo-500"></div>
+                                  </div>
+                                  <p className="font-bold text-indigo-600 text-xl">1/2</p>
+                                  <p className="text-xs text-slate-400">Diambil 1 dari 2</p>
+                                </div>
+
+                                {/* Tanda Lebih Besar */}
+                                <div className="text-center">
+                                  <div className="bg-orange-100 text-orange-600 w-10 h-10 rounded-full flex items-center justify-center font-black text-2xl mx-auto shadow-sm">{'>'}</div>
+                                  <p className="text-xs font-bold text-orange-400 mt-1">Lebih Besar</p>
+                                </div>
+
+                                {/* Kue B (1/4) */}
+                                <div className="text-center">
+                                  <div className="w-24 h-24 bg-indigo-100 rounded-full mx-auto mb-2 border-2 border-indigo-200 relative overflow-hidden grid grid-cols-2 grid-rows-2">
+                                    <div className="bg-white"></div>
+                                    <div className="bg-indigo-500"></div>
+                                    <div className="bg-white"></div>
+                                    <div className="bg-white"></div>
+                                  </div>
+                                  <p className="font-bold text-indigo-600 text-xl">1/4</p>
+                                  <p className="text-xs text-slate-400">Diambil 1 dari 4</p>
+                                </div>
+                              </div>
+                              <p className="text-center text-slate-600 mt-4 bg-indigo-50 p-2 rounded-lg text-sm font-medium">"Potongan 1/2 lebih besar daripada 1/4"</p>
+                            </div>
+
+                            {/* Contoh 2: Pizza */}
+                            <div>
+                              <h3 className="font-bold text-indigo-900 text-lg mb-4">🍕 Contoh 2: Pizza (Penyebut Sama)</h3>
+                              <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10">
+                                <div className="bg-white p-4 rounded-xl border text-center shadow-sm w-full md:w-auto">
+                                  <p className="text-sm text-slate-500 mb-1">Ani Makan</p>
+                                  <p className="text-3xl font-black text-orange-500">1/4</p>
+                                  <div className="flex justify-center mt-2 gap-1">
+                                    <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                                    <div className="w-4 h-4 rounded-full bg-slate-200"></div>
+                                    <div className="w-4 h-4 rounded-full bg-slate-200"></div>
+                                    <div className="w-4 h-4 rounded-full bg-slate-200"></div>
+                                  </div>
+                                </div>
+
+                                <div className="text-center text-slate-400 text-2xl font-bold">{'<'}</div>
+
+                                <div className="bg-white p-4 rounded-xl border text-center shadow-sm w-full md:w-auto">
+                                  <p className="text-sm text-slate-500 mb-1">Budi Makan</p>
+                                  <p className="text-3xl font-black text-orange-500">2/4</p>
+                                  <div className="flex justify-center mt-2 gap-1">
+                                    <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                                    <div className="w-4 h-4 rounded-full bg-orange-500"></div>
+                                    <div className="w-4 h-4 rounded-full bg-slate-200"></div>
+                                    <div className="w-4 h-4 rounded-full bg-slate-200"></div>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="mt-4 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                <h4 className="font-bold text-blue-800 mb-1">🟦 Tips Cepat (Penyebut Sama)</h4>
+                                <p className="text-sm text-blue-900">Jika angka bawahnya sama (misal 4), tinggal lihat angka atasnya.</p>
+                                <p className="text-sm font-bold text-blue-700 mt-2">2 lebih besar dari 1 → Jadi 2/4 {'>'} 1/4</p>
+                              </div>
+                            </div>
+
+                            {/* Kesimpulan */}
+                            <div className="bg-slate-800 text-slate-200 p-5 rounded-2xl">
+                              <h3 className="font-bold text-white text-lg mb-3 flex items-center gap-2"><Star className="text-yellow-400" fill="currentColor"/> Kesimpulan Hari Ini</h3>
+                              <ul className="space-y-3 text-sm md:text-base">
+                                <li className="flex items-start gap-3 bg-slate-700/50 p-2 rounded-lg"><CheckCircle2 className="text-green-400 shrink-0 mt-0.5" size={18}/> <span>Pecahan yang bagiannya <strong>lebih banyak</strong> nilainya lebih besar.</span></li>
+                                <li className="flex items-start gap-3 bg-slate-700/50 p-2 rounded-lg"><CheckCircle2 className="text-green-400 shrink-0 mt-0.5" size={18}/> <span>Gunakan tanda <strong>{'>'}</strong> (lebih besar), <strong>{'<'}</strong> (lebih kecil), atau <strong>=</strong> (sama dengan).</span></li>
+                              </ul>
+                            </div>
+                          </div>
+
                       ) : (
-                          <div><p>Halo adik-adik! Materi untuk hari ini masih dikunci.</p><p className="mt-4">Silakan selesaikan <strong>Hari 1</strong> dulu ya!</p></div>
+                          // --- LOCKED CONTENT ---
+                          <div><p>Halo adik-adik! Materi untuk hari ini masih dikunci.</p><p className="mt-4">Silakan selesaikan <strong>Level Sebelumnya</strong> dulu ya!</p></div>
                       )}
                     </div>
                   </div>
@@ -359,21 +547,21 @@ export default function Page() {
 
                   {/* === TAMPILAN SOAL (BELUM SELESAI) === */}
                   {!isQuizFinished ? (
-                      activeSubject === "MATEMATIKA" && activeDay === 1 ? (
+                      activeQuestions.length > 0 ? (
                           <div className="max-w-xl mx-auto">
                             {/* Progress Bar */}
                             <div className="flex items-center gap-2 mb-6">
-                              <div className="flex-1 h-2 bg-slate-100 rounded-full"><div className="h-full bg-orange-400 rounded-full transition-all duration-300" style={{ width: `${((currentQuestionIndex + 1) / MATH_DAY1_QUESTIONS.length) * 100}%` }}></div></div>
-                              <span className="text-xs font-bold text-slate-400">{currentQuestionIndex + 1}/{MATH_DAY1_QUESTIONS.length}</span>
+                              <div className="flex-1 h-2 bg-slate-100 rounded-full"><div className="h-full bg-orange-400 rounded-full transition-all duration-300" style={{ width: `${((currentQuestionIndex + 1) / activeQuestions.length) * 100}%` }}></div></div>
+                              <span className="text-xs font-bold text-slate-400">{currentQuestionIndex + 1}/{activeQuestions.length}</span>
                             </div>
 
                             <div className="bg-white border-2 border-orange-100 rounded-[25px] md:rounded-[35px] p-6 md:p-10 shadow-lg shadow-orange-50 mb-6 relative overflow-hidden">
                               <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 rounded-full -mr-8 -mt-8 opacity-50"></div>
                               <h3 className="font-bold text-slate-400 uppercase tracking-widest text-xs md:text-sm mb-4">Pertanyaan {currentQuestionIndex + 1}</h3>
-                              <p className="text-lg md:text-xl font-bold text-slate-800 leading-snug mb-6">{MATH_DAY1_QUESTIONS[currentQuestionIndex].question}</p>
+                              <p className="text-lg md:text-xl font-bold text-slate-800 leading-snug mb-6">{activeQuestions[currentQuestionIndex].question}</p>
 
                               <div className="space-y-3">
-                                {MATH_DAY1_QUESTIONS[currentQuestionIndex].options.map((option, idx) => (
+                                {activeQuestions[currentQuestionIndex].options.map((option, idx) => (
                                     <button
                                         key={idx}
                                         onClick={() => handleAnswerSelect(option)}
@@ -388,7 +576,7 @@ export default function Page() {
 
                             <div className="flex justify-between gap-4">
                               <button onClick={handlePrevQuestion} disabled={currentQuestionIndex === 0} className="flex-1 bg-slate-100 text-slate-500 font-bold py-3 rounded-xl disabled:opacity-50">Sebelumnya</button>
-                              {currentQuestionIndex === MATH_DAY1_QUESTIONS.length - 1 ? (
+                              {currentQuestionIndex === activeQuestions.length - 1 ? (
                                   <button onClick={submitQuiz} className="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl shadow-lg transition-transform active:scale-95">Selesai & Lihat Nilai</button>
                               ) : (
                                   <button onClick={handleNextQuestion} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-lg transition-transform active:scale-95">Selanjutnya</button>
@@ -398,8 +586,12 @@ export default function Page() {
                       ) : (
                           // SOAL DUMMY UNTUK HARI LAIN
                           <div className="text-center py-10">
-                            <p className="text-lg text-slate-600 mb-4">Soal untuk hari ini belum tersedia.</p>
-                            <button onClick={() => setViewMode("MENU_HARI")} className="bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold">Kembali ke Menu</button>
+                            <div className="bg-slate-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
+                              <Lock size={40} />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-700 mb-2">Soal Belum Tersedia</h3>
+                            <p className="text-slate-500 mb-6 max-w-xs mx-auto">Maaf ya, latihan soal untuk hari ini sedang disiapkan oleh Guru.</p>
+                            <button onClick={() => setViewMode("MENU_HARI")} className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-bold transition-colors">Kembali ke Menu</button>
                           </div>
                       )
                   ) : (
@@ -418,10 +610,11 @@ export default function Page() {
                           </div>
                         </div>
 
+                        {/* Pembahasan Soal */}
                         <div className="bg-indigo-50 rounded-[30px] p-6 md:p-8 mb-8">
                           <h3 className="font-black text-indigo-900 text-xl mb-6 flex items-center gap-2"><BookOpen size={24}/> Pembahasan Soal</h3>
                           <div className="space-y-6">
-                            {MATH_DAY1_QUESTIONS.map((q, idx) => {
+                            {activeQuestions.map((q, idx) => {
                               const isCorrect = userAnswers[idx] === q.answer;
                               return (
                                   <div key={q.id} className="bg-white p-5 rounded-2xl border border-indigo-100 shadow-sm">
